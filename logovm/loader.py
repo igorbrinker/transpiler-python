@@ -19,33 +19,18 @@
 
 import logging
 
-from logoasm.symbol_table import symtable, set_symbol
-from logovm.errors import LogoVMError
-
-
-class UndefinedReference(LogoVMError):
-    """Symbol is referenced but not defined."""
-
-    def __init__(self, symtype, symbol):
-        """Initilize with proper message."""
-        super().__init__(f"Undefined reference for '{symtype}': '{symbol}'")
+from logoasm.symtable import get_symbols_by_class, set_symbol
+from logovm.errors import UndefinedReference
 
 
 def loader():
     """Adjust addresses to rum program."""
     # Uses global symtable.
-    for symbol, data in symtable.items():
-        if data["type"] == "FUNC":
-            code = data["code"]
-            if code is None:
-                raise UndefinedReference("FUNCTION", symbol)
-            for addr, cmd in enumerate(code):
-                if cmd.startswith("LABEL"):
-                    _, name = cmd.split(" ", 1)
-                    set_symbol(name, pc=addr)
-        if data["type"] == "LABEL":
-            if not data.get("lineno"):
-                raise UndefinedReference("LABEL", symbol)
-        usage = data.get("usage")
-        if usage is not None and usage == 0:
-            logging.warning("Unused symbol: '%s'", symbol)
+    for symbol, data in get_symbols_by_class("FUNC").items():
+        code = data.get("code")
+        if code is None:
+            raise UndefinedReference("FUNCTION", symbol)
+        for addr, cmd in enumerate(code):
+            if cmd.startswith("LABEL"):
+                _, name = cmd.split(" ", 1)
+                set_symbol(name, pc=addr)

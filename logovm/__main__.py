@@ -23,8 +23,9 @@ import logging
 
 from logovm.logovm import Flags, set_flag, call, stack_push
 
-from logoasm.parser import add_symbol, get_symbol, parse_program
+from logoasm.parser import parse_program
 from logoasm.lexer import IllegalCharacter
+from logoasm.symtable import add_symbol, get_symbol
 
 import logovm.machinery
 from logovm.loader import UndefinedReference, loader

@@ -54,3 +54,11 @@ class TypeMismatch(LogoVMError):
         super().__init__(
             f"Type mismatch: '{instruction}':'{expected}':'{observed}'"
         )
+
+
+class UndefinedReference(LogoVMError):
+    """Symbol is referenced but not defined."""
+
+    def __init__(self, symtype, symbol):
+        """Initilize with proper message."""
+        super().__init__(f"Undefined reference for '{symtype}': '{symbol}'")

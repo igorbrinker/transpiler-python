@@ -22,12 +22,15 @@ import logging
 from ply import yacc
 
 from logoasm import lexer
-from logoasm.symbol_table import (
+from logoasm.symtable import (
     add_symbol,
     set_symbol,
     get_symbol,
+    get_symbols_by_class,
     increment_symbol_usage,
 )
+
+from logovm.errors import UndefinedReference
 
 
 parser_error = False  # pylint: disable=invalid-name
@@ -343,6 +346,21 @@ def p_error(p):
         logging.error("Syntax error at EOF.")
 
 
+def check_references():
+    undefined = False
+    min_by_type = {"LABEL": 1, "FUNC": 0}
+    for symbol, data in get_symbols_by_class(("LABEL", "FUNC")).items():
+        lineno = data.get("lineno")
+        symtype = data.get("type")
+        if lineno is None or lineno < min_by_type.get(symtype, 0):
+            logging.error("Undefined symbol: '%s'", symbol)
+            undefined = True
+        if undefined:
+            raise UndefinedReference("LABEL", symbol)
+        if data.get("usage", 1) == 0:
+            logging.warning("Unused symbol: '%s'", symbol)
+
+
 def parse_program(source):
     """Parse LogoASM program."""
     # Variables 'tokens' and 'symtable' will be provide by lexer and logovm.
@@ -355,4 +373,6 @@ def parse_program(source):
     parser = yacc.yacc(start="program", debug=True)
     with open(source, "rt") as input_file:
         data = "\n".join(input_file.readlines())
-    return parser.parse(data, lexer=logolex, tracking=False)
+    start_symbol = parser.parse(data, lexer=logolex, tracking=False)
+    check_references()
+    return start_symbol
