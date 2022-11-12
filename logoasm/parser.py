@@ -341,7 +341,7 @@ def p_error(p):
     global parser_error  # pylint: disable=global-statement,invalid-name
     parser_error = True
     if p:
-        logging.critical("Unexpected token:%d: '%s'", p.lineno, p)
+        logging.critical("Invalid token:%d: '%s'", p.lineno, p.value)
     else:
         logging.error("Syntax error at EOF.")
 
