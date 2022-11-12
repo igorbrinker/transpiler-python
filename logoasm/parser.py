@@ -362,7 +362,7 @@ def check_references():
             logging.warning("Unused symbol: '%s'", symbol)
 
 
-def parse_program(source):
+def parse_program(filename):
     """Parse LogoASM program."""
     # Variables 'tokens' and 'symtable' will be provide by lexer and logovm.
     # pylint: disable=global-variable-not-assigned, invalid-name
@@ -372,8 +372,8 @@ def parse_program(source):
     tokens = lexer.tokens
     logolex = lexer.lexer()
     parser = yacc.yacc(start="program", debug=True)
-    with open(source, "rt") as input_file:
-        data = "\n".join(input_file.readlines())
-    start_symbol = parser.parse(data, lexer=logolex, tracking=False)
+    with open(filename, "rt") as input_file:
+        source = "\n".join(input_file.readlines())
+    start_symbol = parser.parse(source, lexer=logolex, tracking=False)
     check_references()
     return start_symbol

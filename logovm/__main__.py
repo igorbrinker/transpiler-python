@@ -117,14 +117,14 @@ def add_internal_functions():
 
 def main():
     """Entry point for the LogoVM."""
-    program = parse_command_line()
+    filename = parse_command_line()
     # initialize VM
     set_flag(Flags.PEN)
     add_internal_functions()
-    welcome(program)
+    welcome(filename)
     # parse source code
     try:
-        start = parse_program(program)
+        start = parse_program(filename)
     except IllegalCharacter as illchar:
         logging.exception(str(illchar))
     except UndefinedReference as unref:
