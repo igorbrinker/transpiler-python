@@ -18,7 +18,7 @@
 """Implement a symbol table."""
 
 __symtable = {}
-case_insensitive_symtable = False
+case_insensitive_symtable = False  # pylint: disable=invalid-name
 
 
 class SymbolRedefinitionError(Exception):

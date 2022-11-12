@@ -347,6 +347,7 @@ def p_error(p):
 
 
 def check_references():
+    """Check if all references and symbols are used throughout the code."""
     undefined = False
     min_by_type = {"LABEL": 1, "FUNC": 0}
     for symbol, data in get_symbols_by_class(("LABEL", "FUNC")).items():
