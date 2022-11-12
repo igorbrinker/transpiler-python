@@ -26,7 +26,7 @@ class SymbolRedefinitionError(Exception):
 
     def __init__(self, symbol, lineno, original=None):
         """Initialize error with proper message."""
-        super.__init__(
+        super().__init__(
             f"Redeclaration of symbol "
             f"'{original if original else symbol['name']}':{lineno}:"
             f"original declaration at line {symbol['lineno']}"
@@ -38,7 +38,7 @@ class InternalError(Exception):
 
     def __init__(self, msg):
         """Initialize error with proper message."""
-        super.__init__(f"Internal error: {msg}")
+        super().__init__(f"Internal error: {msg}")
 
 
 def __tr_symbol(symbol):
