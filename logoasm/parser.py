@@ -66,28 +66,27 @@ def p_init(p):  # noqa: D205, D400, D403, D415
     init : INIT NUMBER NUMBER NUMBER NUMBER
          | empty
     """
-    if p[1] is None:
-        return
-    logging.log(5, "INIT parsed.")
-    nums = []
-    for i in range(2, len(p)):
-        if isinstance(p[i], int):
-            nums.append(p[i])
-        else:
-            raise Exception("INIT: InvalidType: Required INT got FLOAT.")
+    if p[1] is not None:
+        logging.log(5, "INIT parsed.")
+        nums = []
+        for i in range(2, len(p)):
+            if isinstance(p[i], int):
+                nums.append(p[i])
+            else:
+                raise Exception("INIT: InvalidType: Required INT got FLOAT.")
 
-    add_symbol(
-        "__turtle",
-        "OBJECT",
-        lineno=p.lineno(4),
-        value=ParserObject(x=nums[0], y=nums[1], draw=True),
-    )
-    add_symbol(
-        "__window",
-        "OBJECT",
-        lineno=p.lineno(2),
-        value=ParserObject(w=nums[2], h=nums[3]),
-    )
+        add_symbol(
+            "__turtle",
+            "OBJECT",
+            lineno=p.lineno(4),
+            value=ParserObject(x=nums[0], y=nums[1], draw=True),
+        )
+        add_symbol(
+            "__window",
+            "OBJECT",
+            lineno=p.lineno(2),
+            value=ParserObject(w=nums[2], h=nums[3]),
+        )
 
 
 def p_data(_p):  # noqa: D205, D400, D403, D415, D401
@@ -143,14 +142,9 @@ def p_procedure(p):  # noqa: D205, D400, D403, D415
 
 def p_statements(p):  # noqa: D205, D400, D403, D415
     """statements : statement other_statements"""
-    logging.log(5, "Statement(s): %s", p[1])
-    logging.log(5, "Statements: %s", repr(p[2]))
-    statement = p[1]
-    other = []
-    if len(p) > 2:
-        other = p[2] or []
-    st_list = [statement]
-    st_list.extend(other)
+    logging.log(5, "Statement(s): %s %s", p[1], repr(p[2]))
+    st_list = [p[1]]
+    st_list.extend(p[2] or [])
     p[0] = st_list
 
 
@@ -160,12 +154,11 @@ def p_other_statements(p):  # noqa: D205, D400, D403, D415
                      | empty
     """
     logging.log(5, "Statement(o): %s", p[1])
-    statement = p[1]
-    if statement:
+    if p[1]:
         other = []
         if len(p) > 2:
             other = p[2] or []
-        st_list = [statement]
+        st_list = [p[1]]
         st_list.extend(other)
         p[0] = st_list
     else:
@@ -240,18 +233,20 @@ def p_end_op(p):  # noqa: D205, D400, D403, D415
     p[0] = p[1]
 
 
-def p_compare(p):  # noqa: D205, D400, D403, D415
+def p_compare_value(p):  # noqa: D205, D400, D403, D415
     """
     compare : CMP value
-            | CMP ID
     """
-    if isinstance(p[2], str):
-        if get_symbol(p[2]) is None:
-            raise Exception(f"Undefined symbol:{p.lineno(2)}:{p[2]}")
-        value = p[2]
-    else:
-        value = p[2].value
-    p[0] = f"{p[1]} {value}"
+    p[0] = f"{p[1]} {p[2].value}"
+
+
+def p_compare_id(p):  # noqa: D205, D400, D403, D415
+    """
+    compare : CMP ID
+    """
+    if get_symbol(p[2]) is None:
+        raise Exception(f"Undefined symbol:{p.lineno(2)}:{p[2]}")
+    p[0] = f"{p[1]} {p[2]}"
 
 
 def p_jump(p):  # noqa: D205, D400, D403, D415
@@ -265,24 +260,28 @@ def p_jump(p):  # noqa: D205, D400, D403, D415
     p[0] = " ".join([p[1], p[2]])
 
 
-def p_jmp_target(p):  # noqa: D205, D400, D403, D415
+def p_jmp_target_label(p):  # noqa: D205, D400, D403, D415
     """
     jmp_target : LABEL
-               | NUMBER
     """
-    if p.slice[1].type == "LABEL":
-        label = get_symbol(p[1])
-        if not label:
-            add_symbol(p[1], "LABEL", usage=1)
-        else:
-            if label["type"] != "LABEL":
-                raise Exception(
-                    f"Unexpected Symbol Type:{p.lineno(1)}: '{p[1]}'"
-                )
-            increment_symbol_usage(p[1], p.lineno(1))
+    label = get_symbol(p[1])
+    if label:
+        if label["type"] != "LABEL":
+            raise Exception(
+                f"Unexpected Symbol Type:{p.lineno(1)}: '{p[1]}'"
+            )
+        increment_symbol_usage(p[1], p.lineno(1))
     else:
-        if not isinstance(p[1], int):
-            raise Exception("Jump require INT values or labels.")
+        add_symbol(p[1], "LABEL", usage=1)
+    p[0] = p[1]
+
+
+def p_jmp_target_number(p):  # noqa: D205, D400, D403, D415
+    """
+    jmp_target : NUMBER
+    """
+    if not isinstance(p[1], int):
+        raise Exception("Can't use 'float' with 'jump'.")
     p[0] = p[1]
 
 
@@ -341,7 +340,7 @@ def p_error(p):
     global parser_error  # pylint: disable=global-statement,invalid-name
     parser_error = True
     if p:
-        logging.critical("Invalid token:%d: '%s'", p.lineno, p.value)
+        logging.critical("Invalid token:%d: %s:'%s'", p.lineno, p.type, p.value)
     else:
         logging.error("Syntax error at EOF.")
 
