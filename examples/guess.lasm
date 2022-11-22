@@ -60,7 +60,9 @@ DEF __main__:
   CALL WRITE
   HALT
 :game_over
-  PUSH "Sorry, you missed it. Try it again!\n"
-  PUSH 1
+  PUSH "Sorry, you missed it.\nThe number was: "
+  LOAD key
+  PUSH "\nTry it again!\n"
+  PUSH 3
   CALL WRITE
   HALT
