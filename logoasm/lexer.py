@@ -168,9 +168,9 @@ def t_newline(token):
     token.lexer.lineno += len(token.value) // 2
 
 
-def t_error(t):
+def t_error(tokenizer):
     """Report lexer error."""
-    raise IllegalCharacter(t.value[0], t.lexer.lineno)
+    raise IllegalCharacter(tokenizer.value[0], tokenizer.lexer.lineno)
 
 
 def lexer():
