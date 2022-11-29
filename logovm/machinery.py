@@ -49,12 +49,13 @@ MAXSTACKSIZE = 256 * (2**20)  # 256MB elements stack size.
 class Flags:  # pylint: disable=too-few-public-methods
     """Flag mappings."""
 
-    MAXFLAG = 5
     PEN = 1
     DRAW = 2
-    VERR = 3
+    ERASE = 3
     _UNUSED = 4
     EXC = 5
+    VERR = 15
+    MAXFLAG = VERR
 
 
 def __get_flag_index(flag):
@@ -186,7 +187,8 @@ def __plot(x, y, color=255):
 
 def set_pixel():
     """Implement instruction: SETPX."""
-    __plot(*__turtle[:2], 255)
+    if isset(Flags.PEN):
+        __plot(*__turtle[:2], 0 if isset(Flags.ERASE) else 255)
 
 
 def draw_line():

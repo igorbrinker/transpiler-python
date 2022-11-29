@@ -174,8 +174,8 @@ Os seguintes comandos podem ser utilizados para controlar a área de desenho:
 
 | Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
 | :------ | :-------- | :------- | :-------- | :------- | :--------- |
-| MVTO    | Retira dois valores da pilha representando as coordenadas horizontal e vertical e posiciona o cursor de desenho nessa posição | ... \<y> \<x> | ... | -- | R0 = \<x>, R1 = \<y> |
-| SETPX   | Seta a posição do pixel sob o cursor de desenho para `branco`. | -- | -- | -- | -- |
+| MVTO    | Retira dois valores da pilha representando as coordenadas horizontal e vertical e move o cursor de desenho para essa posição. Se a flag desenho estiver setada, desenha o trajeto. | ... \<x> \<y> | ... | -- | R0 = \<x>, R1 = \<y> |
+| SETPX   | Seta a posição do pixel sob o cursor de desenho, apenas se a flag `PEN` estiver setada. Caso a flag `ERASE` esteja setada o pixel será apagado. | -- | -- | -- | -- |
 
 
 Para setar o valor de um pixel na posição `(25, 30)`, utilize:
