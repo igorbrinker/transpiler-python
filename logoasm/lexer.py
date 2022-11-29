@@ -66,6 +66,7 @@ RESERVED = (
     "RAND",
     "SET",
     "UNSET",
+    "PUSHF",
     "MVTO",
     "SETPX",
     "AND",

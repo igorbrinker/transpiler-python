@@ -206,6 +206,10 @@ def p_push_op_no_value(p):  # noqa: D205, D400, D403, D415
     )
     p[0] = " ".join([p[1], "$ERR"])
 
+def p_push_op_pushf(p):  # noqa: D205, D400, D403, D415
+    """push_op : PUSHF"""
+    p[0] = f"{p[1]}"
+
 
 def p_pop_op(p):  # noqa: D205, D400, D403, D415
     """pop_op : POP"""

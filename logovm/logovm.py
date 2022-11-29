@@ -28,6 +28,7 @@ from logovm import rom
 from logovm.machinery import (
     reg,
     pc_stack,
+    flags,
     Flags,
     stack_pop,
     stack_push,
@@ -173,6 +174,12 @@ def invert_bits():
     stack_push(reg[0])
 
 
+def push_flags():
+    """Implement command PUSHF."""
+    logging.debug("Push flags.")
+    stack_push(flags)
+
+
 def push(value):
     """Implement command PUSH."""
     logging.debug("PUSH: %s", value)
@@ -268,6 +275,7 @@ def execute_command(cmd):
 
 cmds = {
     "PUSH": push,
+    "PUSHF": push_flags,
     "POP": pop,
     "DUP": dup,
     "LOAD": load,
