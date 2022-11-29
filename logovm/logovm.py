@@ -190,7 +190,7 @@ def push(value):
             except ValueError:
                 value = float(value)
         except ValueError:
-            # What to do if value is a string? Push only pushes values.
+            # Assume value is a string.
             pass
     stack_push(value)
 
