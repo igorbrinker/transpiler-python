@@ -53,6 +53,8 @@ RESERVED = (
     "JNZ",
     "JMORE",
     "JLESS",
+    "SKIPZ",
+    "SKIPNZ",
     "DEF",
     "ADD",
     "SUB",

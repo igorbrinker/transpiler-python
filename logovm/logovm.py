@@ -83,6 +83,15 @@ def jump(target):
     pc_stack[-1] = int(reg[5])
 
 
+def skip_next(value):
+    def wrap_jump():
+        logging.debug("Skip next if %szero: R0 = %s", "" if value else "not ", reg[0])
+        if (reg[0] == 0) is value:
+            pc_stack[-1] += 1
+
+    return wrap_jump
+
+
 def jump_relative(value):
     """Execute instruction: JR."""
     logging.debug("JUMP: %s", value)
@@ -254,6 +263,8 @@ cmds = {
     "CALL": call,
     "CMP": compare,
     "JR": jump_relative,
+    "SKIPZ": skip_next(True),
+    "SKIPNZ": skip_next(False),
     "JP": jump,
     "JZ": jump_if("=="),
     "JNZ": jump_if("!="),

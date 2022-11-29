@@ -260,6 +260,14 @@ def p_jump(p):  # noqa: D205, D400, D403, D415
     p[0] = " ".join([p[1], p[2]])
 
 
+def p_jump_skip(p):  # noqa: D205, D400, D403, D415
+    """
+    jump : SKIPZ
+         | SKIPNZ
+    """
+    p[0] = p[1]
+
+
 def p_jmp_target_label(p):  # noqa: D205, D400, D403, D415
     """
     jmp_target : LABEL
