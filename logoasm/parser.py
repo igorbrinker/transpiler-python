@@ -319,6 +319,12 @@ def p_operators(p):  # noqa: D205, D400, D403, D415
         | POW
         | TRUNC
         | RAND
+        | AND
+        | OR
+        | XOR
+        | SHFTR
+        | SHFTL
+        | NOT
     """
     p[0] = p[1]
 

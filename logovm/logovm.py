@@ -157,8 +157,20 @@ def binop(oper):
         "*": operator.mul,
         "/": operator.truediv,
         "**": operator.pow,
+        "&": operator.and_,
+        "|": operator.or_,
+        "^": operator.xor,
+        ">>": operator.rshift,
+        "<<": operator.lshift,
     }
     return binary_op(opers[oper])
+
+
+def invert_bits():
+    """Perform bit inverse operation (not)."""
+    logging.debug("Invert bits.")
+    reg[0] = ~stack_pop()
+    stack_push(reg[0])
 
 
 def push(value):
@@ -280,6 +292,12 @@ cmds = {
     "IDIV": idiv,
     "POW": binop("**"),
     "TRUNC": truncate,
+    "AND": binop("&"),
+    "OR": binop("|"),
+    "XOR": binop("^"),
+    "NOT": invert_bits,
+    "SHFTR": binop(">>"),
+    "SHFTL": binop("<<"),
     "RAND": rand,
     "SET": set_flag,
     "UNSET": unset_flag,

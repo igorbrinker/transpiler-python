@@ -68,6 +68,12 @@ RESERVED = (
     "UNSET",
     "MVTO",
     "SETPX",
+    "AND",
+    "OR",
+    "XOR",
+    "SHFTR",
+    "SHFTL",
+    "NOT",
 )
 NON_RESERVED = ("NUMBER", "STRING", "ID", "LABEL")
 OPERATORS = {
