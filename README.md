@@ -96,29 +96,47 @@ A última seção do programa é a seção de código. Nesta seção serão adic
 
 A seção `CODE` contém uma sequência de comandos que irão alterar o estado da LogoVM.
 
-Os seguintes commandos controlam a lógica de execução do programa:
+Na definição de funções e seu retorno, utilize os seguintes comandos:
 
 | Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
 | :------ | :-------- | :------- | :-------- | :------- | :--------- |
 | DEF \<id> : | Define uma nova função que pode ser chamada via CALL. | -- | -- | -- | -- |
 | CALL \<id> | Executa a função de nome _id_. | Todos os parâmetros para a função devem ser colocados na pilha. | Se a função retorna valores, eles estarão na pilha. | A alteração de registradores depende da funçã executada. | A alteração de registradores depende da funçã executada. |
-| :\<id> | A função `label` (:) cria um label que pode ser alvo de um `jump`. | -- | -- | -- | -- |
+| RET | Retorna ao contexto de execução (função) anterior. | -- | -- | -- | PC | 
+| HALT | Termina a execução do programa e salva a imagem gerada se a flag `DRAW` estiver setada. | -- | -- | -- | PC | 
+
+
+Os seguintes commandos manipulam a pilha de valores e os dados:
+
+| Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
+| :------ | :-------- | :------- | :-------- | :------- | :--------- |
 | PUSH \<value> | Empilha _value_. | -- | Topo = \<value> | -- | -- |
 | POP | Desempilha um elemento. | ... \<value> | ... | -- | R0 = \<value> |
 | DUP | Duplica o elemento no topo da pilha. | ... \<value> | ... \<value> \<value> | -- | R0 = \<value> | -- | R0 = \<value> |
 | LOAD \<id> | Empilha o valor atual da variável com nome _id_. | ... | ... \<id.value> | -- | R0 = \<id.value>
 | STORE \<id> | Desempilha um elemento e armazena o valor na variável com nome _id_. | ... \<value> | ... | -- | R0 = \<id.value> |
+
+
+Os comandos `CMP` realizam tests que modificam valores internos da LogoVM:
+
+| Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
+| :------ | :-------- | :------- | :-------- | :------- | :--------- |
 | CMP \<value> | Compara o valor do topo da pilha com \<value>. | ... \<topo> | ... \<topo> | -- | R0 = -1 se `(topo < value)`; R0 = 0 se `(topo == value)`; R0 = +1 se `(topo > value)` |
 | CMP \<id> | Compara o valor do topo da pilha com o valor da variável \<id>. | ... \<topo> | ... \<topo> | -- | R0 = -1 se `(topo < id.value)`; R0 = 0 se `(topo == id.value)`; R0 = +1 se `(topo > id.value)` |
+
+
+Os commandos a seguir controlam a ordem de execução dos comandos por meio de desvios:
+
+| Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
+| :------ | :-------- | :------- | :-------- | :------- | :--------- |
+| :\<id> | A função `label` (:) cria um label que pode ser alvo de um `jump`. | -- | -- | -- | -- |
 | JP \<id> | Move o PC para o `label` idetificado por \<id>. | -- | -- | -- | PC = \<label[id].pc>, R5 = PC |
 | JZ :\<id> | Move o PC para o `label` idetificado por \<id>, se R0 = 0. | -- | -- | R0 | PC = \<label[id].pc>, R5 = PC |
 | JNZ :\<id> | Move o PC para o `label` idetificado por \<id>, se R0 != 0. | -- | -- | R0 | PC = \<label[id].pc>, R5 = PC |
 | JMORE :\<id> | Move o PC para o `label` idetificado por \<id>, se R0 > 0. | -- | -- | R0 | PC = \<label[id].pc>, R5 = PC |
 | JLESS :\<id> | Move o PC para o `label` idetificado por \<id>, se R0 \< 0. | -- | -- | R0 | PC = \<label[id].pc>, R5 = PC |
-| SET \<number> | Liga a _flag_ indicada por `number` (um inteiro). | -- | -- | -- | FL |
-| UNSET \<number> | Desliga a _flag_ indicada por `number` (um inteiro). | -- | -- | -- | FL |
-| RET | Retorna ao contexto de execução (função) anterior. | -- | -- | -- | PC | 
-| HALT | Termina a execução do programa e salva a imagem gerada se a flag `DRAW` estiver setada. | -- | -- | -- | PC | 
+| SKIPZ | Pula a próxima instrução se R0 = 0. | -- | -- | R0 | PC pode ser alterado. |
+| SKIPNZ | Pula a próxima instrução se R0 != 0. | -- | -- | R0 | PC pode ser alterado. |
 
 
 LogoASM disponibiliza as seguintes operações matemáticas:
@@ -135,14 +153,36 @@ LogoASM disponibiliza as seguintes operações matemáticas:
 | TRUNC | Trunca o valor no topo da pilha para a sua parte inteira. Opera apenas em `NUMBER`. | ...\<float> | ... \<int> | -- | R0 = \<int> |
 
 
+Bits individuais podem ser manipulados com os seguintes comandos:
+
+| Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
+| :------ | :-------- | :------- | :-------- | :------- | :--------- |
+| NOT | Retira um valor da pilha, realiza a operação de inversão de _bits_ e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> | ... \<~ lhs> | -- | R0 = \<~ lhs> |
+| AND | Retira dois valores da pilha, realiza a operação `and` _bit a bit_ e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> \<rhs> | ... \<lhs & rhs> | -- | R0 = \<lhs & rhs>, R1 = \<rhs> |
+| OR | Retira dois valores da pilha, realiza a operação `or` _bit a bit_ e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> \<rhs> | ... \<lhs | rhs> | -- | R0 = \<lhs | rhs>, R1 = \<rhs> |
+| XOR | Retira dois valores da pilha, realiza a operação `xor` _bit a bit_ e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> \<rhs> | ... \<lhs & rhs> | -- | R0 = \<lhs ^ rhs>, R1 = \<rhs> |
+| SHFTR | Retira dois valores da pilha, realiza a operação de rotação de _bits_ à direita e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> \<rhs> | ... \<lhs >> rhs> | -- | R0 = \<lhs >> rhs>, R1 = \<rhs> |
+| SHFTL | Retira dois valores da pilha, realiza a operação de rotação de _bits_ à direita e empilha o resultado. Opera apenas em `INT`.| ...\<lhs> \<rhs> | ... \<lhs \<\< rhs> | -- | R0 = \<lhs \<\< rhs>, R1 = \<rhs> |
+
+
 Flags e Registradores
 ---------------------
 
-A LogoVM possui seis registradores, que, nessa versão não são acessíveis para uso geral. Existem também 3 _flags_ de controle e status:
+Os comandos `SET` e `UNSET` são utilizados para manipular as flags da LogoVM:
 
-* PEN (1): Quando setada, a função "MOVE" irá desenhar o caminho percorrido.
+| Comando | Descrição | Stack IN | Stack OUT | Regs. IN | Regs.  OUT |
+| :------ | :-------- | :------- | :-------- | :------- | :--------- |
+| SET \<number> | Liga a _flag_ indicada por `number` (um inteiro). | -- | -- | -- | FL |
+| UNSET \<number> | Desliga a _flag_ indicada por `number` (um inteiro). | -- | -- | -- | FL |
+
+As seguintes _flags_ de controle e status que podem ser alteradas:
+
+* PEN (1): Quando setada, funções de desenho e movimento do cursor de desenho alteram a área de desenho.
 * DRAW (2): Quando setada, a função "HALT" irá gerar uma imagem com o conteúdo da memória de vídeo.
-* EXC (5): Quando setada, ocorreu uma exceção em alguma operação realizada. A exceção dependerá da operação e do erro.
+* ERASE (3): Quando setada,  funções de desenho e movimento do cursor de desenho apagam pixels da área de desenho.
+* EXC (5): Quando setada, indica a ocorrência uma exceção em alguma operação realizada.
+
+A LogoVM possui seis registradores, que, nessa versão não são acessíveis para uso geral. O único registrador relevante para os programas, nessa versão da LogoVM é o registrador `R0`, utilizado pelos comandos `CMP`, `JZ`, `JNZ`, `JLESS` e `JMORE`, `SKIPZ` e `SKIPNZ`.
 
 
 Entrada e Saída de Dados
