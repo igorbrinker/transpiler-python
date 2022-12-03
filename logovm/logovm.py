@@ -49,8 +49,8 @@ def idiv():
     reg[3] = stack_pop()
     reg[0] = operator.floordiv(reg[0], reg[1])
     reg[1] = operator.mod(reg[0], reg[1])
-    stack_push(reg[0])
     stack_push(reg[1])
+    stack_push(reg[0])
 
 
 def compare(value):
