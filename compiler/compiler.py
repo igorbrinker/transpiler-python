@@ -20,17 +20,17 @@ tokens = (
     "RPAREN"
 )
 
-reserveds = {
-   'IF': 'IF',
-   'THEN': 'THEN',
-   'ELSE': 'ELSE',
-   'END': 'END',
-   'WHILE': 'WHILE',
-   'NOT': 'NOT',
-   'TO': 'TO',
-   'AND': 'AND',
-   'OR': 'OR',
-   'SET': 'SET',
+reserved = {
+   'if': 'IF',
+   'then': 'THEN',
+   'else': 'ELSE',
+   'end': 'END',
+   'while': 'WHILE',
+   'not': 'NOT',
+   'to': 'TO',
+   'and': 'AND',
+   'or': 'OR',
+   'set': 'SET',
 }
 
 t_ignore = ' \t'
@@ -50,7 +50,7 @@ def t_NUMBER(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-    t.type = reserveds.get(t.value.upper(), 'ID')
+    t.type = reserved.get(t.value.upper(), 'ID')
     return t
 
 def t_ignore_newline(t):
