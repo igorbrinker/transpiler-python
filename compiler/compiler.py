@@ -2,14 +2,16 @@ from ply.lex import lex
 from ply.yacc import yacc
 from yaml import dump
 
+# Tokens
 tokens = (
     'TO', 'ID', 'NUMBER', 'END', 'COLON', 'IF', 'THEN', 'ELSE', 'WHILE',
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'LPAREN', 'RPAREN'
 )
 
-# Caracteres a serem ignorados
+# Caracter a ser ignorado
 t_ignore = ' \t'
 
+# Simbolos
 t_COLON     = r':'
 t_PLUS      = r'\+'
 t_MINUS     = r'-'
@@ -37,15 +39,18 @@ def t_NUMBER(t):
     t.value = int(t.value)
     return t
 
+# Identifier
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
     t.type = reserved.get(t.value.upper(), 'ID')
     return t
 
+# Ignorar novas linhas
 def t_ignore_newline(t):
     r'\n+'
     t.lexer.lineno += t.value.count('\n')
 
+# Detector de erros
 def t_error(t):
     print(f'Illegal character {t.value[0]!r}')
     t.lexer.skip(1)
@@ -82,9 +87,11 @@ def p_call_func(p):
     """call_func : ID func_params"""
     p[0] = new_leaf('Call function', p[1], p[2])
 
+# Declaracao de funcao
 def p_declare_func(p):
     'declare_func : TO ID func_params statements END'
     p[0] = new_leaf('Declare function', p[1], p[2], p[3], p[4])
+
 def p_number(p):
     'number : NUMBER'
     p[0] = ('number', p[1])
@@ -112,13 +119,14 @@ def p_func_param(p):
     else:
         p[0] = ('Parameter', p[1])
 
-
 def p_error(p):
     print(f'Syntax error at {p.value!r}')
 
+# Novo nodo
 def new_node(name, *children):
      return {"name":name, "children": children}
 
+# Nova folha
 def new_leaf(name, *value):
     return {"name": name, "value": value}
 
