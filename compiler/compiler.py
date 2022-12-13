@@ -1,6 +1,7 @@
 from ply.lex import lex
 from ply.yacc import yacc
 from yaml import dump
+import json
 
 tokens = (
     'TO', 'ID', 'NUMBER', 'END', 'COLON', 'IF', 'THEN', 'ELSE', 'WHILE',
@@ -197,3 +198,5 @@ expression = """
 """
 expression_result = parser.parse(expression)
 print(dump(expression_result, sort_keys=False, indent=2))
+# with open('result.json', 'w', encoding ='utf8') as tree:
+#     json.dumps(dump(expression_result, sort_keys=False, indent=2))
