@@ -3,21 +3,8 @@ from ply.yacc import yacc
 from yaml import dump
 
 tokens = (
-    'TO',
-    'ID',
-    'NUMBER',
-    'END',
-    'COLON',
-    'IF',
-    'THEN',
-    'ELSE',
-    'WHILE',
-    "PLUS",
-    "MINUS",
-    "TIMES",
-    "DIVIDE",
-    "LPAREN",
-    "RPAREN"
+    'TO', 'ID', 'NUMBER', 'END', 'COLON', 'IF', 'THEN', 'ELSE', 'WHILE',
+    'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'LPAREN', 'RPAREN'
 )
 
 reserved = {
@@ -194,16 +181,18 @@ def p_factor_number(p):
     '''
     p[0] = new_leaf('Number', p[1])
 
+# Buildando o Parser
 parser = yacc()
 
+# Expressão
 expression = """
-    TO SQUARE :length
-        FORWARD :length
-        RIGHT 90
+    TO v1 :length
+        v2 :length
+        v3 90
     END
-    SETXY 20 20
-    SQUARE 30
-    IF TESTE THEN SQUARE 30 END
+    SET xy 20 20
+    v1 30
+    IF TESTE THEN v1 30 END
     1 + 1
 """
 expression_result = parser.parse(expression)
