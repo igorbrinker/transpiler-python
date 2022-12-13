@@ -10,14 +10,13 @@ tokens = (
 # Caracteres a serem ignorados
 t_ignore = ' \t'
 
-
-t_COLON = r':'
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
+t_COLON     = r':'
+t_PLUS      = r'\+'
+t_MINUS     = r'-'
+t_TIMES     = r'\*'
+t_DIVIDE    = r'/'
+t_LPAREN    = r'\('
+t_RPAREN    = r'\)'
 
 # Palavras reservadas
 reserved = {
@@ -33,7 +32,6 @@ reserved = {
    'set': 'SET',
 }
 
-# 
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
@@ -69,7 +67,6 @@ def p_statements(p):
         else:
             p[0] = [p[1]]
             p[0].extend(p[2])
-
 
 def p_statement(p):
     """statement : declare_func
@@ -188,14 +185,16 @@ parser = yacc()
 
 # Expressão
 expression = """
-    TO v1 :length
+    TO  v1 :length
         v2 :length
         v3 90
     END
     SET xy 20 20
     v1 30
     IF TESTE THEN v1 30 END
-    1 + 1
+    2 + 3
+    IF TESTE THEN v3 90 END
+    3 + 3
 """
 expression_result = parser.parse(expression)
 print(dump(expression_result, sort_keys = False, indent = 2))
