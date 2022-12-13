@@ -1,13 +1,25 @@
 from ply.lex import lex
 from ply.yacc import yacc
 from yaml import dump
-import json
 
 tokens = (
     'TO', 'ID', 'NUMBER', 'END', 'COLON', 'IF', 'THEN', 'ELSE', 'WHILE',
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'LPAREN', 'RPAREN'
 )
 
+# Caracteres a serem ignorados
+t_ignore = ' \t'
+
+
+t_COLON = r':'
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+
+# Palavras reservadas
 reserved = {
    'if': 'IF',
    'then': 'THEN',
@@ -21,16 +33,7 @@ reserved = {
    'set': 'SET',
 }
 
-t_ignore = ' \t'
-
-t_COLON = r':'
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-
+# 
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
@@ -49,13 +52,12 @@ def t_error(t):
     print(f'Illegal character {t.value[0]!r}')
     t.lexer.skip(1)
 
+# Buildando Lexer
 lexer = lex()
-
 
 def p_program(p):
     """program : statements"""
     p[0] = new_node('Program', p[1])
-
 
 def p_statements(p):
     """statements : statement statements
@@ -85,7 +87,6 @@ def p_call_func(p):
 
 def p_declare_func(p):
     'declare_func : TO ID func_params statements END'
-    # p[0] = ('declare function', p[1], p[2], p[3], p[4])
     p[0] = new_leaf('Declare function', p[1], p[2], p[3], p[4])
 def p_number(p):
     'number : NUMBER'
@@ -197,6 +198,4 @@ expression = """
     1 + 1
 """
 expression_result = parser.parse(expression)
-print(dump(expression_result, sort_keys=False, indent=2))
-# with open('result.json', 'w', encoding ='utf8') as tree:
-#     json.dumps(dump(expression_result, sort_keys=False, indent=2))
+print(dump(expression_result, sort_keys = False, indent = 2))
