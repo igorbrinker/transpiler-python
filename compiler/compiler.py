@@ -192,4 +192,4 @@ expression = """
     3 + 2
 """
 expression_result = parser.parse(expression)
-print(dump(expression_result, sort_keys = False, indent = 2))
+print(dump(expression_result, sort_keys = False, indent = 8))
