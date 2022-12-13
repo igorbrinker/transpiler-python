@@ -185,16 +185,11 @@ parser = yacc()
 
 # Expressão
 expression = """
-    TO  v1 :length
-        v2 :length
-        v3 90
+    TO V1 :length
     END
-    SET xy 20 20
-    v1 30
-    IF TESTE THEN v1 30 END
-    2 + 3
-    IF TESTE THEN v3 90 END
-    3 + 3
+    V1 80
+    IF X THEN V1 80 END
+    3 + 2
 """
 expression_result = parser.parse(expression)
 print(dump(expression_result, sort_keys = False, indent = 2))
